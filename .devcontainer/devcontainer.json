@@ -1,0 +1,34 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/javascript-node
+{
+    "name": "CrazyElectron Blog",
+    "dockerFile": "Dockerfile",
+    "appPort": [3000],
+    "runArgs": ["-u", "node"],
+    "settings": {
+      "workbench.colorTheme": "Cobalt2",
+      "terminal.integrated.defaultProfile.osx": "bash",
+      "terminal.integrated.defaultProfile.linux": "bash"
+    },
+    "postCreateCommand": "npm install",
+    "extensions": [
+      "esbenp.prettier-vscode",
+      "wesbos.theme-cobalt2",
+      "editorconfig.editorconf",
+      "dbaeumer.vscode-eslint",
+      "github.vscode-pull-request-github",
+      "donjayamanne.githistory",
+      "eamodio.gitlens",
+      "heybourn.headwind",
+      "ms-vsliveshare.vsliveshare",
+      "eg2.vscode-npm-script",
+      "christian-kohler.npm-intellisense",
+    //   "snyk-security.snyk-vulnerability-scanner",
+      "stylelint.vscode-stylelint",
+      "bradlc.vscode-tailwindcss",
+      "gruntfuggly.todo-tree",
+      "octref.vetur",
+      "znck.vue",
+    ]
+  }
+  
