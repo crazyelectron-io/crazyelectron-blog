@@ -87,5 +87,4 @@ At address $C000 an optional PROM can be used that could be any 2708 (1Kx8) EPRO
 I never used it in the original MEK but the schematics mention that an MC68708, MCM7641 or MCM68317 could be used.
 These days 2708's are no longer produced, but on eBay there are still many parts available, so I decided to order a few.
 
-
 [... to be continued...]

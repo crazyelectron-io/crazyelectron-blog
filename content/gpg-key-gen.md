@@ -689,8 +689,8 @@ origin  git@github.com:github-user/crypt-test.git (push)
 
 ### Set up the local directory
 
-To ensure the access rights for user, group and world are correct for all files and directories crreated, we have to configure the directory with the correct access rights.
-Create the repositiry root directory and install the `setfacl` command:
+To ensure the access rights for user, group and world are correct for all files and directories crreated, we must configure the directory with the correct access rights.
+Create the repository root directory and install the `setfacl` command:
 
 ```bash
 $ sudo mkdir -p /path/to/repository
@@ -796,15 +796,15 @@ Entries look like this:
 <files-to-encrypt> filter=git-crypt diff=git-crypt
 ```
 
-So far we have no key to unlock the crypt on another computer or by someone else that collaborates.
+So far we have no key to unlock the crypt on another computer or by someone else that collaborates with us, so let's fix that.
 
-### Add the GPG subkey to git-crypt
+### Add the GnuPG subkey to git-crypt
 
-When GPG was configured, we created a subkey to use with `git-crypt`, so we can directly add it to the GPG vault.
+When GnuPG was configured, we created a subkey to use with `git-crypt`, so we can directly add it to the GnuPG vault.
 Use the short _key id_ of the previously generated subkey.
 
 > Note that an auto-generated commit is applied, which should be pushed to GitHub.
-> Also, don't forget to replace any key id or fingerprint with your own values.
+> Also, don't forget to replace any key_id or fingerprint mentioned in this example with your own values.
 
 ```shell
 ❯ git-crypt add-gpg-user 910AB590D12A7019D7AE2DD68213BFBA94CA75DE
@@ -826,7 +826,7 @@ Date:   Thu Feb 11 07:11:29 2021 +0100
 (END) q
 ```
 
-GPG keys for `git-crypt` of the test repository are stored in `~/crypt-test/.git-crypt/keys/default`.
+GnuPG keys for `git-crypt` of the test repository are stored in `~/crypt-test/.git-crypt/keys/default`.
 Before adding files to encrypt, make sure the repository is unlocked with the following command and enter the passphrase.
 
 ```shell
