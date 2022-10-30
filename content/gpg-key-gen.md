@@ -1159,7 +1159,6 @@ We can unlock the vault (meaning decrypt the encryption key using our personnal 
 
 <alert>Using the Git pre-commit hook avoids having sensitive files (as filtered within the `.gitattributes` file) commited in cleartext while the vault is locked.</alert>
 
-
 ### Finishing/Testing
 
 Finally, log out and back in (or reboot). launchd will load the service automatically - no need to use `launchctl load`, etc.
@@ -1173,9 +1172,6 @@ $ launchctl list | grep ssh-agent
 -	0	com.openssh.ssh-agent
 12345	0	com.openssh.ssh-agent-local
 ```
-
-
-
 
 ## (Optional) Modifying SSH
 

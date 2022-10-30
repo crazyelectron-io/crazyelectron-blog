@@ -35,8 +35,8 @@ I particularly liked the clean en powerfull instructionset and registers of the 
 The MEK6800D2 had an hexadecimal keypad with additional keys for running, storing, reading and stepping through memory and registers, and it had 6 7-segment displays as 'output device'.
 Somehow I have lost (misplaced) it along the way and now that I am growing older (and much more grey hair) I often think back to those days.
 
-This documents the journey I took to recreate the original MEK6800D2 using as much of the original design and components as possible.
-Some parts will be hard - if not impossible - to get hold of, like the 6830 1024x8 ROM that was factory preprogrammed with the Motorola JBUG monitor.
+This documents the journey I took to recreate the original MEK/D2 using as much of the original design and components as possible.
+Some parts will be hard - if not impossible - to get hold of, like the MC6830 1024x8 ROM that was factory preprogrammed with the Motorola JBUG monitor.
 For these parts I have searched for alternative solutions.
 Although tempted, I stayed away from improvements like increasing ROM and RAM or adding USB, etc.
 I also kept the 2-board design with the separate display/keyboard PCB.
