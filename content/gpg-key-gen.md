@@ -2,7 +2,7 @@
 title: 6 steps to protect your secrets on Github
 description: Secure your secretswith GPG keys  while storing them in a public Github repository.
 image: git-secret.png
-publishedAt: 2019-06-02
+publishedAt: 2021-06-02
 authors:
   - name: Ron Moerman
     avatarUrl: https://pbs.twimg.com/profile_images/1583370320261554178/nvAlAh58_400x400.jpg
@@ -34,10 +34,10 @@ This 'how-to' is based on macOS and Debian/Ubuntu but should work equally well o
 Before we can start using `git-crypt`, we need a working Git and GPG configuration.
 Setting up our system to work with Git repositories is quite easy, and you probably already have done that.
 If not, look at other places for help on setting up Git first.
-Although most likely already covered in your setup, make sure your global Git parameters for `user.name` and `user.email` are set correctly for use with GitHub.
-An easy way to check your Git configuration is by using the command `git config --global --list` as it will show you the global Git parameters like `user.name` and `user.email` that are used fir Git commands like `commit` and `push`.
+Make sure your global Git parameters for `user.name` and `user.email` are set correctly for use with GitHub.
+An easy way to check your Git configuration is by using the command `git config --global --list` as it will show you the global Git parameters like `user.name` and `user.email` that are used for Git commands like `commit` and `push`.
 
-The other key component used by `git-crypt` is GnuPG (GNU Privacy Guard), which is described [here](https://github.com/AGWA/git-crypt).
+The other key component used by `git-crypt` is GnuPG (GNU Privacy Guard), which is described [here](https://gnupg.org/).
 We go into de detailed steps and describe the setup and usage of `git-crypt` soon, but since it needs a key to do it's magic, we'll start with `GnuPG`.
 
 **GnuPG** is a well-known open source product that can generate and manage your private/public key pairs.
@@ -71,7 +71,7 @@ brew install gnupg
   </code-block>
 </code-group>
 
-<alert>The examples shown in this article are based on a MacBook Pro with M1 SoC which is an ARM64-based architecture, running Big Sur 11.2.</alert>
+<alert>The examples shown in this article are based on a MacBook Pro with M1 SoC which is an ARM64-based architecture, running Big Sur</alert>
 
 The GnuPG package will be installed as shown below.
 
@@ -163,7 +163,7 @@ License GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
-Home: /home/beheerder/.gnupg
+Home: /home/user/.gnupg
 Supported algorithms:
 Pubkey: RSA, ELG, DSA, ECDH, ECDSA, EDDSA
 Cipher: IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
@@ -196,14 +196,15 @@ Compression: Uncompressed, ZIP, ZLIB, BZIP2
   </code-block>
 </code-group>
 
-When GPG starts for the first time there is no keybox yet, so it will create one in `~/.gnupg`.
+When GnuPG starts for the first time there is no keybox yet, so it will create one in `~/.gnupg`.
 Let's do that now, just to show the file and directory being created.
-Since GPG will enter an interactive shell, we must exit with `Control-C`.
+Since GnuPG will enter an interactive shell, we must exit with `Control-C`.
 
 <code-group>
   <code-block label="Debian/Ubuntu" active>
 
 ```
+$ gpg
 gpg: directory '/home/user/.gnupg' created
 gpg: keybox '/home/user/.gnupg/pubring.kbx' created
 gpg: WARNING: no command supplied.  Trying to guess what you mean ...
@@ -228,7 +229,7 @@ gpg: signal Interrupt caught ... exiting
   </code-block>
 </code-group>
 
-The first order of business is to generate a key to rule all keys.
+The first order of business is to generate a _key to rule all keys_.
 This key will be used only for authentication and certification and subkeys are created for specific tasks.
 For use with `git-crypt` and other systems, we will generate subkeys and not use the primary key.
 
@@ -241,7 +242,7 @@ One more advice before we start generating the key: make sure to use a very stro
 I suggest to use a password manager for storing it safely.
 
 ```shell
-❯ gpg --full-generate-key --expert
+gpg --full-generate-key --expert
 ```
 
 As shown below, we will disable the sign and encrypt options for this key as it is only used for certifying.
@@ -423,7 +424,7 @@ Use the following command to make a backup file to store in a secure location.
 ```shell
 ❯ gpg --export-secret-keys --armor me@example.com > gpg-privkey.asc
 
-❯ cat me-privkey.asc
+❯ cat gpg-privkey.asc
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQdGBGAVvRgBEACkcNuMG0KtMzq+JP6cYnbNAY+hUzOi6+F8k8bW0f+g4r233i7Q
@@ -463,7 +464,7 @@ In that case, just try again later.
 
 #### Backups
 
-It cannot stressed enough: treat your secret key as you would any very important document or physical key.
+It cannot be stressed enough: treat your secret key as you would any very important document or physical key.
 If you lose your secret key, you will be unable to sign communications, or to open encrypted data.
 If you followed the above, you have a secret key which is just a regular file that you store somewhere safe for backup purposes.
 An even more secure model than keeping the key on disk is to use a hardware token.
@@ -507,7 +508,8 @@ We're now _finally_ done with our primary key and ready to generate a subkey for
 
 We will use the primary key created just now only for signing other keys, which happens infrequently.
 Day to day, we will use subkeys for signing, authentication and/or encryption of sensitive data (like a Git repository, ssh key or mail).
-_It is highly recommended to create separate subkeys for different usecases._
+
+<alert>It is highly recommended to create separate subkeys for different usecases.</alert>
 
 We will now add a subkey for `git-crypt` with the `addkey` command in the interactive edit mode of `gpg`.
 Make sure to set the key to only allow _encryption_, not signing, select a 4096-bit size, and an expiration date of less than 2 years for this subkey (let's use 18 months).
@@ -591,7 +593,7 @@ gpg> save
 
 Confirm that the subkey is created by looking at the line starting with **ssb** above.
 It has the _key id_ of the subkey just generated.
-When performing actions on a (sub)key we can use either the username, short _key id_ or long fingerprint shown before.
+When performing actions on a (sub)key we can use either the username, short _key id_ or (longer) fingerprint.
 
 To retrieve the key id and fingerprints of the key and subkey(s) later, you can use additional command line options like `--with-fingerprint` and `--with-subkey-fingerprint` to get all the required fingerprints to use in other commands.
 It is also possible to add those options as default to the GnuPG configuration by adding these options without the leading `--` to the `~/.gnupg/gpg.conf` file, like this:
@@ -602,7 +604,7 @@ with-fingerprint
 with-subkey-fingerprint
 ```
 
-When listing keys, you will get alle the details without the need for additional options on the command line.
+When listing keys, you will get all the details without the need for additional options on the command line.
 The only bad thing about GnuPG is that it displays the fingerprints with a space between each hex byte, so we need a little tweaking to make the output usefull for other commands that require the fingerprint as input.
 
 ```shell
@@ -611,14 +613,14 @@ F806033A4E362927630AC23C2F80A75D623F82CD
 910AB590D12A7019D7AE2DD68213BFBA94CA75DE
 ```
 
-The fingerprint of the subkey is needed below when we configure a repository for git-crypt.
+The fingerprint of the subkey is needed later when we configure a repository for git-crypt.
 
 ## Install git-crypt
 
 Being secure is no small matter.
 Fortunately, all this hard work has to be done only once and we are now ready to start configuring and using `git-crypt`.
 
-As said, `git-crypt` is the software we use to handle the automatic encryption of designated files when publishing to a Git repository.
+As said, [`git-crypt`](https://github.com/AGWA/git-crypt) is the software we use to handle the automatic encryption of designated files when publishing to a Git repository.
 It allows you to maintain files containing sensitive information on the public GitHub environment without the risk of leaking your passwords and other secret information.
 
 > Two important remarks first (we will deal with this soon) to keep in mind:
@@ -640,8 +642,6 @@ git-crypt 0.6.0
 
   </code-block>
   <code-block label="macOS">
-
-On macOS with the command:
 
 ```shell
 ❯ brew install git-crypt

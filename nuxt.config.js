@@ -13,6 +13,8 @@ const publicRuntimeConfig = {
   githubRepository: 'crazyelectron-blog',
   githubMainBranch: 'master',
 
+  twitterUsername: 'CrazyElectronIO',
+
   footerLinks,
 }
 
