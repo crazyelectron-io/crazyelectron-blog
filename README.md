@@ -1,20 +1,27 @@
 # crazyelectron-blog
 
-Electronics and Retro computing Blog
+## Setup
 
-## Build Setup
+Install dependencies:
 
 ```bash
-# install dependencies
-$ npm install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
+yarn install
 ```
+
+## Development
+
+```bash
+yarn dev
+```
+
+## Static Generation
+
+This will create the `dist/` directory for publishing to static hosting:
+
+```bash
+yarn generate
+```
+
+To preview the static generated app, run `yarn start`
+
+For detailed explanation on how things work, checkout the [docs](https://nuxtjs.blog).

@@ -1,34 +1,32 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/javascript-node
 {
-    "name": "CrazyElectron Blog",
-    "dockerFile": "Dockerfile",
-    "appPort": [3000],
-    "runArgs": ["-u", "node"],
-    "settings": {
-      "workbench.colorTheme": "Cobalt2",
-      "terminal.integrated.defaultProfile.osx": "bash",
-      "terminal.integrated.defaultProfile.linux": "bash"
-    },
-    "postCreateCommand": "npm install",
-    "extensions": [
-      "esbenp.prettier-vscode",
-      "wesbos.theme-cobalt2",
-      "editorconfig.editorconf",
-      "dbaeumer.vscode-eslint",
-      "github.vscode-pull-request-github",
-      "donjayamanne.githistory",
-      "eamodio.gitlens",
-      "heybourn.headwind",
-      "ms-vsliveshare.vsliveshare",
-      "eg2.vscode-npm-script",
-      "christian-kohler.npm-intellisense",
-    //   "snyk-security.snyk-vulnerability-scanner",
-      "stylelint.vscode-stylelint",
-      "bradlc.vscode-tailwindcss",
-      "gruntfuggly.todo-tree",
-      "octref.vetur",
-      "znck.vue",
-    ]
-  }
-  
+	"name": "Node.js",
+	"build": {
+		"dockerfile": "Dockerfile",
+		// Update 'VARIANT' to pick a Node version: 18, 16, 14.
+		// Append -bullseye or -buster to pin to an OS version.
+		// Use -bullseye variants on local arm64/Apple Silicon.
+		"args": { "VARIANT": "18-bullseye" }
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "yarn install",
+
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "node"
+}

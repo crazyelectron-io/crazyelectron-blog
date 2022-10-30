@@ -1,0 +1,19 @@
+# .gitattributes
+
+#--- Make sure it works in multiple OS'es
+
+# Enforce Unix newlines
+* text=auto eol=lf
+
+#--- Specify files to encrypt using git-crypt
+
+# Encrypt any .key file
+*.key filter=git-crypt diff=git-crypt
+
+# Secret files folder
+secrets/**/* filter=git-crypt diff=git-crypt
+
+#frontend/nuxt.config.js filter=git-crypt diff=git-crypt
+
+# Never encrypt .gitattributes (keep as the very last line!)
+.gitattributes !filter !diff
