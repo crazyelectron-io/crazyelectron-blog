@@ -30,7 +30,7 @@
       </div>
       <div class="xl:text-lg font-medium leading-relaxed text-center">
         <p>
-          This is a simple blog where I keep track of my projects and findings. There just might be some usefull stuff in there for you as well.
+          This is a simple (work in progress) blog where I keep track of my projects and findings. There just might be some usefull stuff in there for you as well.
         </p>
       </div>
     </div>
