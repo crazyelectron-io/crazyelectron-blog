@@ -13,8 +13,6 @@ tags:
   - Encryption
 link: https://codesandbox.io/embed/nuxt-content-l164h?hidenavigation=1&theme=dark
 ---
-# Introduction
-
 When managing configuration files for your programs, Home Automation, automated deployment tools, API access etc., it is not always avoidable to store secrets, like passwords or API keys, in certain files.
 Obviously, those secrets should not end up in a publicly accessible repository on GitHub.
 It would be unfortunate if we could not use GitHub, a great place to store versions of our files and allows us to restore it on another system or revert a change, among other well known virtues of a repository.
@@ -30,7 +28,7 @@ This key must be stored inside the local Git repository, in the `git-crypt` key 
 When files are pushed to the remote repository, they are encrypted, if specified in the Git meta-data file.
 And to be able to allow collaborators to work on the repository, we can add their PGP key to the `git-crypt` vault as well.
 
-# Prerequisites
+## Prerequisites
 
 This 'how-to' is based on macOS and Debian/Ubuntu but should work equally well on most other Linux distributions, and even for Windows the steps are mostly identical.
 Before we can start using `git-crypt`, we need a working Git and GnuPG configuration.
@@ -660,7 +658,7 @@ git-crypt 0.6.0
 
 We are now ready to create a repository and use `git-crypt` to keep our secrets safe.
 
-### Test the git-crypt installation
+#### Test the git-crypt installation
 
 Let's put `git-crypt` to the test.
 Create a local repository directory - let's call it `crypt-test` - and initialize it for use with Git and `git-crypt`.
@@ -901,7 +899,7 @@ To github.com:github-user/crypt-test.git
 Branch 'master' set up to track remote branch 'master' from 'origin'.
 ```
 
-> REMEMBER: Files that already existed in the repository will not be encrypted after you add them to `.gitattributes`; this must be done _before_ adding (`git add`) them to the repository.
+<alert>REMEMBER: Files that already existed in the repository will not be encrypted after you add them to `.gitattributes`; this must be done _before_ adding (`git add`) them to the repository.</alert>
 
 Let's add some files to the local repository: a regular file (README.md) and a secret file to encrypt.
 Make sure the secret file is added to `.gitattributes` (and `.gitattributes` commited) if your secret file is not in the example secured directory (`./secrets`).
@@ -984,7 +982,7 @@ In summary, to add more files to encrypt the steps are:
 4. Commit any changes, including the newly created secret file, to the repository.
 5. Push the commit up to the remote repository.
 
-# Collaborate on an encrypted repository
+## Collaborate on an encrypted repository
 
 As far as the local repository is concerned we're done: the local files are decrypted and when you push the commited changes they will be encrypted on the remote repository.
 But we're not completely done yet, as there is no way for others to unlock the vault when they clone the repository with encrypted files.
@@ -1092,7 +1090,7 @@ To github.com:cgithub-user/crypt-test.git
 See also [here](https://medium.com/@sumitkum/securing-your-secret-keys-with-git-crypt-b2fa6ffed1a6)
 From now on, the added user can collaborate on the repository and unlock it as needed.
 
-# Safeguard against unencrypted commits
+## Safeguard against unencrypted commits
 
 Of course, we have to be sure that files with secrects are not accidentally added unencrypted with `git-crypt`.
 We can setup a Git pre-commit hook for this, based on the work of [Falkor](https://gist.github.com/Falkor/848c82daa63710b6c132bb42029b30ef).
@@ -1161,9 +1159,6 @@ We can unlock the vault (meaning decrypt the encryption key using our personnal 
 
 <alert>Using the Git pre-commit hook avoids having sensitive files (as filtered within the `.gitattributes` file) commited in cleartext while the vault is locked.</alert>
 
-
-## Finishing/Testing
-
 Finally, log out and back in (or reboot). launchd will load the service automatically - no need to use `launchctl load`, etc.
 
 To test, simply run `ssh-add -l`. This will activate your locally registered `com.openssh.ssh-agent-local` without activating the system one as your shell will have detected and copied the socket listner location from `SSH_AUTH_SOCK_LOCAL` to `SSH_AUTH_SOCK`.
@@ -1176,14 +1171,14 @@ $ launchctl list | grep ssh-agent
 12345	0	com.openssh.ssh-agent-local
 ```
 
-# (Optional) Modifying SSH
+## (Optional) Modifying SSH
 
 You can run SSH Agent with modified options (MacOS Big Sur, No Homebrew, No SIP Modification).
 The following will show you how you can modify the startup options of the SSH agent supplied by macOS in a non-invasive way. This can be useful for doing things like setting a key lifetime, which can then be used with `AddKeysToAgent` in your `~/.ssh/config` to automate the timing out of saved keys. This ensures that your passphrase is re-asked for periodically without having to shutdown, re-log, or having it actually persisted in keychain, the latter being almost as bad as having no passphrase at all, given that simply being logged in is generally enough to then use the key.
 
 This method does *not* modify the system-installed SSH agent service (`com.openssh.ssh-agent`), but rather duplicates its functionality into a user-installed launch agent where we can then modify the options. Modifying the system-installed service is becoming increasingly harder to do; [SIP](https://support.apple.com/en-us/HT204899) generally protects the files you need to modify, in addition to certain system volumes being mounted read-only now. This is generally a good thing for application and system security and should not be messed with if you don't have to. Additionally, the [Homebrew](https://brew.sh/) `openssh` package has issues in that you possibly lose out in the modifications that Apple has made to allow the SSH agent to work seamlessly with socket activation - YMMV, but I have had issues getting it to work as it seems to expect to have access to create the socket, causing conflicts when attempting to start the agent.
 
-## Copying the plist
+### Copying the plist
 
 ```
 mkdir ~/Library/LaunchAgents
@@ -1226,7 +1221,7 @@ Here's a copy of the modified plist file:
 </plist>
 ```
 
-###Shell Modifications
+### Shell Modifications
 
 Next, add this to your shell profie (ie: `.zprofile` or `.bash_profile`):
 
@@ -1236,6 +1231,6 @@ if [ -n "${SSH_AUTH_SOCK_LOCAL}" ]; then
 fi
 ```
 
-# Conclusion
+## Conclusion
 
 Although the initial setup requires some effort, once it is setup it is mostly automated, except for adjusting `.gitattributes` for new directories, files or file patterns.
