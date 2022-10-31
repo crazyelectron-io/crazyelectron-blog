@@ -1,6 +1,6 @@
 ---
-title: 6 steps to protect your secrets on Github
-description: Secure your secretswith GPG keys  while storing them in a public Github repository.
+title: Protect your secrets on Github
+description: Secure your secrets with GnuPG keys while storing them in a public Github repository.
 image: git-secret.png
 publishedAt: 2021-06-02
 authors:
@@ -13,6 +13,8 @@ tags:
   - Encryption
 link: https://codesandbox.io/embed/nuxt-content-l164h?hidenavigation=1&theme=dark
 ---
+# Introduction
+
 When managing configuration files for your programs, Home Automation, automated deployment tools, API access etc., it is not always avoidable to store secrets, like passwords or API keys, in certain files.
 Obviously, those secrets should not end up in a publicly accessible repository on GitHub.
 It would be unfortunate if we could not use GitHub, a great place to store versions of our files and allows us to restore it on another system or revert a change, among other well known virtues of a repository.
@@ -23,15 +25,15 @@ One of those tools is `git-crypt`, which uses OpenPGP keys to encrypt and decryp
 There is some complexity involved in the initial setup, but once that is done, it is mostly automated.
 
 Before diving into the detailed steps to secure repository files, let's give an overview of what we need to do before we can sleep well, being asured that our secrets are safe in a public repository.
-It starts with creating a GPG key that can be used to encrypt and decrypt repository files.
+It starts with creating a GnuPG key that can be used to encrypt and decrypt repository files.
 This key must be stored inside the local Git repository, in the `git-crypt` key vault to be precise.
 When files are pushed to the remote repository, they are encrypted, if specified in the Git meta-data file.
 And to be able to allow collaborators to work on the repository, we can add their PGP key to the `git-crypt` vault as well.
 
-## Prerequisites
+# Prerequisites
 
 This 'how-to' is based on macOS and Debian/Ubuntu but should work equally well on most other Linux distributions, and even for Windows the steps are mostly identical.
-Before we can start using `git-crypt`, we need a working Git and GPG configuration.
+Before we can start using `git-crypt`, we need a working Git and GnuPG configuration.
 Setting up our system to work with Git repositories is quite easy, and you probably already have done that.
 If not, look at other places for help on setting up Git first.
 Make sure your global Git parameters for `user.name` and `user.email` are set correctly for use with GitHub.
@@ -43,14 +45,14 @@ We go into de detailed steps and describe the setup and usage of `git-crypt` soo
 **GnuPG** is a well-known open source product that can generate and manage your private/public key pairs.
 It is a widely used implementation of the OpenPGP standard.
 It defines a hybrid encryption framework based on the notion of [Web of Trust](https://en.wikipedia.org/wiki/Web_of_trust).
-You will find a nice GPG tutorial [here](https://futureboy.us/pgp.html).
+You will find a nice GnuPG tutorial [here](https://futureboy.us/pgp.html).
 These public keys can be shared with the world to allow the verification, and there are even public repositories to store and retrieve them.
-But, since the focus of this article is to create a way to secure our secrets in public repositories, we'll focus on the generation and usage of GPG for this purpose.
+But, since the focus of this article is to create a way to secure our secrets in public repositories, we'll focus on the generation and usage of GnuPG for this purpose.
 
-### Install GnuPG
+## Install GnuPG
 
 There is a package in the Debian and Ubuntu repository for GnuPG, as well as a Homebrew package for macOS, so there is no need to install from source.
-For other Linux distributions and Windows, there are also installation packages available, but they are not covered here.
+For many other Linux distributions and Windows, there are also installation packages available, but they are not covered here.
 More information can be found on the [download page](https://www.gnupg.org/download/index.html) of the official [GnuPG website](https://www.gnupg.org).
 
 <code-group>
@@ -233,7 +235,7 @@ The first order of business is to generate a _key to rule all keys_.
 This key will be used only for authentication and certification and subkeys are created for specific tasks.
 For use with `git-crypt` and other systems, we will generate subkeys and not use the primary key.
 
-### Generate the primary key
+## Generate the key to rule them all
 
 To generate a decent primary key, use the `--expert` flag which exposes additional menu choices.
 Make sure to select an _RSA key_ and disable _Signing_ and _Encryption_ for the primary key.
@@ -414,97 +416,7 @@ ppub   rsa4096 2021-02-11 [C] [expires: 2024-02-11]
 uid           [ultimate] YOUR NAME <me@example.com>
 ```
 
-### Sharing and securing your key
-
-#### Export keys
-
-Obviously, we should not loose this 'master key' and a backup to a secure location is advisable.
-Use the following command to make a backup file to store in a secure location.
-
-```shell
-❯ gpg --export-secret-keys --armor me@example.com > gpg-privkey.asc
-
-❯ cat gpg-privkey.asc
------BEGIN PGP PRIVATE KEY BLOCK-----
-
-lQdGBGAVvRgBEACkcNuMG0KtMzq+JP6cYnbNAY+hUzOi6+F8k8bW0f+g4r233i7Q
-wtXjg7J1lDlt0UTGH1VgIhto84b5fXUdVgR2Ld6KhZf8E9yQQNNXuqHvOUOeR37l
-  ...
-
------END PGP PRIVATE KEY BLOCK-----
-```
-
-If you want to export your public keys you can use the following command.
-
-```shell
-❯ gpg --export --armor me@example.com > gpg-pubkey.asc
-
-❯ cat gpg-pubkey.asc
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-mQINBGAVvRgBAACkdNuMG0KtMzj+JP6cYnbNAY+hUzOi6+F8k8bW0f+g9r233j7Q
-  ...
-
------END PGP PUBLIC KEY BLOCK-----
-```
-
-By making the public key available to others, they can verify signed communications, or send us encrypted communications if necessary.
-Use the following command to send the public key to the GNUPG default public key server (**keys.gnupg.net**).
-This will take a while, so be patience.
-
-```shell
-❯ gpg --keyserver certserver.pgp.com --send-key F806033A4E362927630AC23C2F80A75D623F82CD
-gpg: sending key 2F80A75D623F82CD to hkp://certserver.pgp.com
-gpg: keyserver send failed: Operation timed out
-gpg: keyserver send failed: Operation timed out
-```
-
-Be aware thet the key server can sometimes be offline or very busy as shown above.
-In that case, just try again later.
-
-#### Backups
-
-It cannot be stressed enough: treat your secret key as you would any very important document or physical key.
-If you lose your secret key, you will be unable to sign communications, or to open encrypted data.
-If you followed the above, you have a secret key which is just a regular file that you store somewhere safe for backup purposes.
-An even more secure model than keeping the key on disk is to use a hardware token.
-There are several options available on the market, but make sure the token advertises OpenPGP support.
-See [this blog entry](https://blog.josefsson.org/2014/06/23/offline-gnupg-master-key-and-subkeys-on-yubikey-neo-smartcard/) for how to create a key with offline backups, and use the token for online access.
-
-It is not advisable to copy GnuPG data between systems by copying the entire `.gnupg` directory, but for backup/recovery purposes it can be usefull to make a temporary backup when you are trying a new command or feature, for instance.
-The command to create an archive of the entire directory and subdirectories while exluding any sockets is:
-
-```shell
-❯ umask 077; find $HOME/.gnupg ! -type s ! -type d -exec tar -cf $HOME/gnupg-backup.tar {} +
-tar: Removing leading `/' from member names
-tar: Removing leading `/' from hard link targets
-```
-
-<alert>Remember: this backup file contains all your keys!</alert>
-
-### Revoking keys
-
-Revoking a key withdraws it from public use.
-That should only be necessary if it is compromised or lost, or we don't remember the passphrase.
-When creating the key pair, GnuPG also creates a key revocation certificate and stores it in `~/.gnupg/openpgp-revocs.d` as could be seen in the output of the key generation step before.
-
-```shell
-  ...
-gpg: revocation certificate stored as '/Users/me/.gnupg/openpgp-revocs.d/13EED974518E3C278A5B802C137694C262ACE8CCD.rev'
-  ...
-```
-
-When issueing the revocation certificate later, it notifies others that the public key is not to be used.
-They may still use a revoked public key to verify old signatures, but not encrypt messages anymore.
-As long as we still have access to the private key, data encrypted previously may still be decrypted.
-But if we forget the passphrase, we will not be able to decrypt data encrypted to that key.
-This revocation certificate should be moved to a medium no one can access but you.
-If someone gets access to this certificate, it can be used to make your key unusable.
-One safe option is to print this certificate and store it away, just in case your media become unreadable.
-
-We're now _finally_ done with our primary key and ready to generate a subkey for `git-crypt` usage.
-
-## Generate git-crypt subkey
+## Generate the git-crypt subkey
 
 We will use the primary key created just now only for signing other keys, which happens infrequently.
 Day to day, we will use subkeys for signing, authentication and/or encryption of sensitive data (like a Git repository, ssh key or mail).
@@ -615,6 +527,96 @@ F806033A4E362927630AC23C2F80A75D623F82CD
 
 The fingerprint of the subkey is needed later when we configure a repository for git-crypt.
 
+## Sharing and securing your key
+
+### Export keys
+
+Obviously, we should not loose our keys and a backup to a secure location is advisable.
+Use the following command to make a backup file to store in a secure location.
+
+```shell
+❯ gpg --export-secret-keys --armor me@example.com > gpg-privkey.asc
+
+❯ cat gpg-privkey.asc
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+lQdGBGAVvRgBEACkcNuMG0KtMzq+JP6cYnbNAY+hUzOi6+F8k8bW0f+g4r233i7Q
+wtXjg7J1lDlt0UTGH1VgIhto84b5fXUdVgR2Ld6KhZf8E9yQQNNXuqHvOUOeR37l
+  ...
+
+-----END PGP PRIVATE KEY BLOCK-----
+```
+
+If you want to export your public keys you can use the following command.
+
+```shell
+❯ gpg --export --armor me@example.com > gpg-pubkey.asc
+
+❯ cat gpg-pubkey.asc
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQINBGAVvRgBAACkdNuMG0KtMzj+JP6cYnbNAY+hUzOi6+F8k8bW0f+g9r233j7Q
+  ...
+
+-----END PGP PUBLIC KEY BLOCK-----
+```
+
+By making the public key available to others, they can verify signed communications, or send us encrypted communications if necessary.
+Use the following command to send the public key to the GNUPG default public key server (**keys.gnupg.net**).
+This will take a while, so be patience.
+
+```shell
+❯ gpg --keyserver certserver.pgp.com --send-key F806033A4E362927630AC23C2F80A75D623F82CD
+gpg: sending key 2F80A75D623F82CD to hkp://certserver.pgp.com
+gpg: keyserver send failed: Operation timed out
+gpg: keyserver send failed: Operation timed out
+```
+
+Be aware thet the key server can sometimes be offline or very busy as shown above.
+In that case, just try again later.
+
+### Backups
+
+It cannot be stressed enough: treat your secret key as you would any very important document or physical key.
+If you lose your secret key, you will be unable to sign communications, or to open encrypted data.
+If you followed the above, you have a secret key which is just a regular file that you store somewhere safe for backup purposes.
+An even more secure model than keeping the key on disk is to use a hardware token.
+There are several options available on the market, but make sure the token advertises OpenPGP support.
+See [this blog entry](https://blog.josefsson.org/2014/06/23/offline-gnupg-master-key-and-subkeys-on-yubikey-neo-smartcard/) for how to create a key with offline backups, and use the token for online access.
+
+It is not advisable to copy GnuPG data between systems by copying the entire `.gnupg` directory, but for backup/recovery purposes it can be usefull to make a temporary backup when you are trying a new command or feature, for instance.
+The command to create an archive of the entire directory and subdirectories while exluding any sockets is:
+
+```shell
+❯ umask 077; find $HOME/.gnupg ! -type s ! -type d -exec tar -cf $HOME/gnupg-backup.tar {} +
+tar: Removing leading `/' from member names
+tar: Removing leading `/' from hard link targets
+```
+
+<alert>Remember: this backup file contains all your keys!</alert>
+
+### Revoking keys
+
+Revoking a key withdraws it from public use.
+That should only be necessary if it is compromised or lost, or we don't remember the passphrase.
+When creating the key pair, GnuPG also creates a key revocation certificate and stores it in `~/.gnupg/openpgp-revocs.d` as could be seen in the output of the key generation step before.
+
+```shell
+  ...
+gpg: revocation certificate stored as '/Users/me/.gnupg/openpgp-revocs.d/13EED974518E3C278A5B802C137694C262ACE8CCD.rev'
+  ...
+```
+
+When issueing the revocation certificate later, it notifies others that the public key is not to be used.
+They may still use a revoked public key to verify old signatures, but not encrypt messages anymore.
+As long as we still have access to the private key, data encrypted previously may still be decrypted.
+But if we forget the passphrase, we will not be able to decrypt data encrypted to that key.
+This revocation certificate should be moved to a medium no one can access but you.
+If someone gets access to this certificate, it can be used to make your key unusable.
+One safe option is to print this certificate and store it away, just in case your media become unreadable.
+
+We're now _finally_ done with our primary key and ready to generate a subkey for `git-crypt` usage.
+
 ## Install git-crypt
 
 Being secure is no small matter.
@@ -658,7 +660,7 @@ git-crypt 0.6.0
 
 We are now ready to create a repository and use `git-crypt` to keep our secrets safe.
 
-## Test git-crypt
+### Test the git-crypt installation
 
 Let's put `git-crypt` to the test.
 Create a local repository directory - let's call it `crypt-test` - and initialize it for use with Git and `git-crypt`.
@@ -982,7 +984,7 @@ In summary, to add more files to encrypt the steps are:
 4. Commit any changes, including the newly created secret file, to the repository.
 5. Push the commit up to the remote repository.
 
-## Collaborate on an encrypted repository
+# Collaborate on an encrypted repository
 
 As far as the local repository is concerned we're done: the local files are decrypted and when you push the commited changes they will be encrypted on the remote repository.
 But we're not completely done yet, as there is no way for others to unlock the vault when they clone the repository with encrypted files.
@@ -1090,7 +1092,7 @@ To github.com:cgithub-user/crypt-test.git
 See also [here](https://medium.com/@sumitkum/securing-your-secret-keys-with-git-crypt-b2fa6ffed1a6)
 From now on, the added user can collaborate on the repository and unlock it as needed.
 
-## Safeguard against unencrypted commits
+# Safeguard against unencrypted commits
 
 Of course, we have to be sure that files with secrects are not accidentally added unencrypted with `git-crypt`.
 We can setup a Git pre-commit hook for this, based on the work of [Falkor](https://gist.github.com/Falkor/848c82daa63710b6c132bb42029b30ef).
@@ -1159,7 +1161,8 @@ We can unlock the vault (meaning decrypt the encryption key using our personnal 
 
 <alert>Using the Git pre-commit hook avoids having sensitive files (as filtered within the `.gitattributes` file) commited in cleartext while the vault is locked.</alert>
 
-### Finishing/Testing
+
+## Finishing/Testing
 
 Finally, log out and back in (or reboot). launchd will load the service automatically - no need to use `launchctl load`, etc.
 
@@ -1173,14 +1176,14 @@ $ launchctl list | grep ssh-agent
 12345	0	com.openssh.ssh-agent-local
 ```
 
-## (Optional) Modifying SSH
+# (Optional) Modifying SSH
 
-You can run SSH Agent w/Modified Options (MacOS Big Sur, No Homebrew, No SIP Modification).
+You can run SSH Agent with modified options (MacOS Big Sur, No Homebrew, No SIP Modification).
 The following will show you how you can modify the startup options of the SSH agent supplied by macOS in a non-invasive way. This can be useful for doing things like setting a key lifetime, which can then be used with `AddKeysToAgent` in your `~/.ssh/config` to automate the timing out of saved keys. This ensures that your passphrase is re-asked for periodically without having to shutdown, re-log, or having it actually persisted in keychain, the latter being almost as bad as having no passphrase at all, given that simply being logged in is generally enough to then use the key.
 
 This method does *not* modify the system-installed SSH agent service (`com.openssh.ssh-agent`), but rather duplicates its functionality into a user-installed launch agent where we can then modify the options. Modifying the system-installed service is becoming increasingly harder to do; [SIP](https://support.apple.com/en-us/HT204899) generally protects the files you need to modify, in addition to certain system volumes being mounted read-only now. This is generally a good thing for application and system security and should not be messed with if you don't have to. Additionally, the [Homebrew](https://brew.sh/) `openssh` package has issues in that you possibly lose out in the modifications that Apple has made to allow the SSH agent to work seamlessly with socket activation - YMMV, but I have had issues getting it to work as it seems to expect to have access to create the socket, causing conflicts when attempting to start the agent.
 
-### Copying the plist
+## Copying the plist
 
 ```
 mkdir ~/Library/LaunchAgents
@@ -1223,7 +1226,7 @@ Here's a copy of the modified plist file:
 </plist>
 ```
 
-### Shell Modifications
+###Shell Modifications
 
 Next, add this to your shell profie (ie: `.zprofile` or `.bash_profile`):
 
@@ -1233,6 +1236,6 @@ if [ -n "${SSH_AUTH_SOCK_LOCAL}" ]; then
 fi
 ```
 
-## Conclusion
+# Conclusion
 
 Although the initial setup requires some effort, once it is setup it is mostly automated, except for adjusting `.gitattributes` for new directories, files or file patterns.
