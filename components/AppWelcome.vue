@@ -3,6 +3,9 @@
     <div class="max-w-lg mx-auto">
       <div class="flex justify-center mb-6">
         <div>
+          <AppSearchInput />
+        </div>
+        <div>
           <img
             src="/welcome/content-light.png"
             alt="welcome image"
