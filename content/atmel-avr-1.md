@@ -1,8 +1,8 @@
 ---
-title: AVR library routines part 1
-description: Atmel AVR 8-bit MCU library routines for EEPROM and serial communications, part 1
+title: AVR library routines
+description: Atmel AVR 8-bit MCU library routines for EEPROM and serial communications
 image: ATmega644PA.webp
-publishedAt: 2017-08-01
+publishedAt: 2019-08-01
 authors:
   - name: Ron Moerman
     avatarUrl: https://pbs.twimg.com/profile_images/1583370320261554178/nvAlAh58_400x400.jpg
