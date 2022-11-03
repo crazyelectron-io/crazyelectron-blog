@@ -32,7 +32,7 @@ Therefor, I still very much like the cartoon in the September 1977 edition of El
 
 Since I want to support different EPROMS, an EPROM emulator thn can be programmed from a development system is the prefered solution.
 In my search for EPROM emulator designs to use a a starting point I stumbled upon the work of Kris Sekula.
-His [EPROM Emulater NG](https://github.com/Kris-Sekula/EPROM-EMU-NG/fork) seemed exactly what I needed and it had all the sources and KiCAD files for the schematics and PCB on GitHub.
+His [EPROM Emulater NG](https://github.com/Kris-Sekula/EPROM-EMU-NG) seemed exactly what I needed and it had all the sources and KiCAD files for the schematics and PCB on GitHub.
 It supports all 27xx(x) EPROMS upto 256k bit, except the 2708, from the 2716 to the 27256.
 So, it looks like this is going to be a short blog post as I decided to be lazy and start ordering the PCB and the parts to built one.
 Note that Kris also sells assembled systems for those who don't want to built it themselves.

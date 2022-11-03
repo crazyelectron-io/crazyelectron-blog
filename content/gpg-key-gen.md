@@ -1189,7 +1189,7 @@ After you do this, open the file with your favorite text editor of choice and re
 * `com.openssh.ssh-agent` with `com.openssh.ssh-agent-local`
 * `SSH_AUTH_SOCK` with `SSH_AUTH_SOCK_LOCAL`
 
-Then, add in some options you want for the local agent (as additional `string` tags in the `ProgramArguments` array). A good example is `-t 14400` to time out loaded keys after 4 hours.
+Then, add some options you want for the local agent (as additional `string` tags in the `ProgramArguments` array). A good example is `-t 14400` to time out loaded keys after 4 hours.
 
 Here's a copy of the modified plist file:
 
