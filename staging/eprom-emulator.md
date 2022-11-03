@@ -22,14 +22,15 @@ The in-circuit emulator might be an option for future support of an 2708, but fo
 
 ## EPROM Emulator 1-O-1
 
-An EPROM emulator in essence is an piece of RAM of at least the required capacity for the EPROM to emulate with two separate and mutually exclusive data and address busses; one to connect the emulator to the circuit under test and mimic an EPROM, the other to allow a development system to write the bytes to the RAM of the emulator.
+An EPROM emulator in essence is an piece of RAM of at least the required capacity for the EPROM to be emulated with two separate and mutually exclusive data and address busses; one to connect the emulator to the circuit under test and mimic an EPROM, the other to allow a development system to write the bytes to the RAM of the emulator.
 As you can imagine, those actions should not happen at the same time; if one bus is accessed, the other should be blocked.
 Therefor, I still very much like the cartoon in the September 1977 edition of Elektuur (Elektor) that visualizes it by way of a lock.
 
-![EPROM Emulator cartoon](sluis.png) 
+![EPROM Emulator cartoon](sluis.png)
 
 ## Build or Buy?
 
+Since I want to support different EPROMS, an EPROM emulator thn can be programmed from a development system is the prefered solution.
 In my search for EPROM emulator designs to use a a starting point I stumbled upon the work of Kris Sekula.
 His [EPROM Emulater NG](https://github.com/Kris-Sekula/EPROM-EMU-NG/fork) seemed exactly what I needed and it had all the sources and KiCAD files for the schematics and PCB on GitHub.
 It supports all 27xx(x) EPROMS upto 256k bit, except the 2708, from the 2716 to the 27256.
@@ -37,6 +38,6 @@ So, it looks like this is going to be a short blog post as I decided to be lazy 
 Note that Kris also sells assembled systems for those who don't want to built it themselves.
 
 To my surpirise almost all parts were readily available, only one or two were on backorder from the manufacturer.
-Since my first order of business was to program 24-pin EPROMs for the [MEK6800D2](https://crazyelectron.io/mek6800d2_01), I ordered parts for two cables, one for 24-pin DIP sockets and one for 28-pin sockets, making it more future-proof.
+Since my first order of business was to program 24-pin EPROMs, I ordered parts for two cables, one for 24-pin DIP sockets and one for 28-pin sockets, making it more future-proof.
 
 [... to be continued when the PCB and parts have arrived...]
