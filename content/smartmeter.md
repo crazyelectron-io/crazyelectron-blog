@@ -19,13 +19,13 @@ When moving to a new house, I immediately had a Smart Meter installed (still not
 
 The offical website of the [Netbeheer Nederland](http://www.netbeheernederland.nl) organization, a joint initiative of all Dutch powergrid operators, conatins the standards documentation. All relevant documents are located at the [Slimme Meter](http://www.netbeheernederland.nl/themas/hotspot/hotspot-documenten/?dossierid=11010056&title=Slimme%20meter&onderdeel=Documenten) page. Note that there are multiple versions of the so called **DSMR** standard and different models of Smart Meter are installed throughout The Netherlands. So I checked wich Smart Meter was installed in my house (I live in the area where Stedin manages the powergrid): A Landis+Gyr E350 (type ZMF110), for our 3-phase 230V AC electricity connection.
 
-![My Smart Meter](/images/landys.jpg?lightbox=800&cropResize=400,400) {.float_left}
+![My Smart Meter](smartmeter/landys.jpg?lightbox=800&cropResize=400,400) {.float_left}
 
 BTW, the 1-phase equivalent is the ZCF110 type. As can be seen on the picture above, the meter clearly specifies DSMR version 4.0, but checking the display info shows the 4.2 version is active (more on the display information later), probably through an update in the last year. BTW. DSMR stands for Dutch Smart Meter Requirements. Newer DSM's may use the newer DMSR v5.x standard, but I have not checked if there is any relevant difference. We also have a 'Smart' Gas Meter which is wirelessly connected to the Landis.
 
 The diagram below (from the DSMR 5.0 standards document, which is much more readable than the older versions) shows the different types of devices and interfaces that make up the energy monitoring ecosystem.
 
-![Energy Monitoring](/images/energy-mon.jpg?cropResize=500,500)
+![Energy Monitoring](smartmeter/energy-mon.jpg?cropResize=500,500)
 
 The P0 port (infra red) is the maintenance port at the smart meter. The P1 port, using a TTL Serial protocol, provides the usage data of all connected monitoring devices (like a gas meter). The P2 port, usually wireless and communicating on 868 MHz, is used to collect data from the gas meter (which is also included in the data available on the P1 port) and is based on the M-Bus protocol. The P3 port, also wireless, communicates via GPRS (DLMS CoSEM protocol) to transmits the data from our meter to the transporter of the energy. And the P4 port, which is an open market interface for Independent Service Companies, grid operators, and other suppliers. We are currently only interested in the P1 port. Any system connected to P1 is designated an OSM (Other Services Module) in the DSMR standards description.
 
@@ -35,7 +35,7 @@ The standard allows for multiple 'slave meters' to be attached on the P2 port. T
 
 Of particular interest is the "P1 companion standard" that describes all the details of the P1 port and can be found on the website of [Netbeheer](http://www.netbeheernederland.nl/publicaties/publicatie/?documentregistrationid=797212672). This is the interface we can use to get readings from the Landis (or any other DSMR-standard meter). From looking at the meter, I concluded that the 4.x version was applicable and the latest publication is DSMR V4.2.2 dated December 16, 2016.
 
-![RJ12 port](/images/rj12.jpg?cropResize=400,400) {.float_right}
+![RJ12 port](smartmeter/rj12.jpg?cropResize=400,400) {.float_right}
 
 The P1 port is a 6p6c socket, commonly referred to as RJ12. The RJ11/RJ12 plug is the one we have known for years as the telephone plug. You can go with an RJ11 plug that has only the 4 middle pins connected, but your best option is to use an RJ12 connection with all 6 wires connected. That way you can optionally use the power output from the P1 port to power the reading device. The 6 pins of the P1 port are wired as shown in the table below.
 
@@ -199,7 +199,7 @@ The P1 messages should show up on the console screen every 10 seconds.
 
 To connect the P1 port of a Landis+Gyr E350 smart meter to a Raspberry Pi 3 you can use the following schematic.
 
-![P1 to Pi](/images/p1topi.jpg?cropresize=400,400) {.float_right}
+![P1 to Pi](smartmeter/p1topi.jpg?cropresize=400,400) {.float_right}
 
 Two noteworthy things: First, the Landis has a so called 'open collector output' - a kind of floating output - and needs a pull-up resistor of 1k to switch between low (<1V) and high (>4V). Furthermore, the serial TTL signal is inverted so it must be inverted again before feeding it to the Raspberry Pi serial interface. I used a 7404 hex-inverter since I have plenty laying around,but a simple FET (transistor) and resistor could do as well. Plug it in,add power to the Pi 3 and on your computer connect to the Pi via SSH. Start minicom and see the data flowing.
 
