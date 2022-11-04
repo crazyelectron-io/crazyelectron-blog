@@ -1,6 +1,6 @@
 ---
 title: Smart energy meter - first encounter
-description: When moving to a new house, I immediately had a Smart Meter installed (still not sure what's so smart about it...) with the intention to hook-up a device to read the power and gas consumption throughout the day.
+description: When moving to a new house, I immediately had a Smart Meter installed (still not sure what is so smart about it...) with the intention to hook-up a device to read the power and gas consumption throughout the day.
 image: energie-mon.jpg
 publishedAt: 2017-03-29
 authors:
