@@ -38,14 +38,14 @@ Make sure your global Git parameters for `user.name` and `user.email` are set co
 An easy way to check your Git configuration is by using the command `git config --global --list` as it will show you the global Git parameters like `user.name` and `user.email` that are used for Git commands like `commit` and `push`.
 
 The other key component used by `git-crypt` is GnuPG (GNU Privacy Guard), which is described [here](https://gnupg.org/).
-We go into de detailed steps and describe the setup and usage of `git-crypt` soon, but since it needs a key to do it's magic, we'll start with `GnuPG`.
+We go into the detailed steps and describe the setup and usage of `git-crypt` soon, but since it needs a key to do it's magic, we'll start with `GnuPG`.
 
 **GnuPG** is a well-known open source product that can generate and manage your private/public key pairs.
 It is a widely used implementation of the OpenPGP standard.
 It defines a hybrid encryption framework based on the notion of [Web of Trust](https://en.wikipedia.org/wiki/Web_of_trust).
 You will find a nice GnuPG tutorial [here](https://futureboy.us/pgp.html).
-These public keys can be shared with the world to allow the verification, and there are even public repositories to store and retrieve them.
-But, since the focus of this article is to create a way to secure our secrets in public repositories, we'll focus on the generation and usage of GnuPG for this purpose.
+These public keys can be shared with the world to allow verification and there are even public repositories to store and retrieve them.
+Since the purpose of this article is to secure our secrets in public repositories, we'll focus on the generation and usage of GnuPG for this purpose.
 
 ## Install GnuPG
 
