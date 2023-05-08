@@ -203,7 +203,7 @@ Since GnuPG will enter an interactive shell, we must exit with `Control-C`.
 <code-group>
   <code-block label="Debian/Ubuntu" active>
 
-```
+```shell
 $ gpg
 gpg: directory '/home/user/.gnupg' created
 gpg: keybox '/home/user/.gnupg/pubring.kbx' created
@@ -658,7 +658,7 @@ git-crypt 0.6.0
 
 We are now ready to create a repository and use `git-crypt` to keep our secrets safe.
 
-#### Test the git-crypt installation
+### Test the git-crypt installation
 
 Let's put `git-crypt` to the test.
 Create a local repository directory - let's call it `crypt-test` - and initialize it for use with Git and `git-crypt`.
@@ -713,6 +713,7 @@ Preparing to unpack .../acl_2.2.53-4_amd64.deb ...
 Unpacking acl (2.2.53-4) ...
 Setting up acl (2.2.53-4) ...
 ```
+
 Next, set the default user, group and world ownership with ACL's as desired:
 
 ```bash
@@ -751,6 +752,7 @@ $ cd /path/to/repository
 $ git init
 Initialized empty Git repository in /path/to/.git/
 ```
+
 Create an _empty_ repository on GitHub.
 Add some files to the local repository, commit and push them.
 
@@ -1165,10 +1167,10 @@ To test, simply run `ssh-add -l`. This will activate your locally registered `co
 
 You can verify this by running `ps aux | grep ssh-agent`. The only running instance you should see is `/usr/bin/ssh-agent -l -t 14400`. Additionally, `launchctl list | grep ssh-agent` should show a PID for `com.openssh.ssh-agent-local` and not `com.openssh.ssh-agent`:
 
-```
+```shell
 $ launchctl list | grep ssh-agent
--	0	com.openssh.ssh-agent
-12345	0	com.openssh.ssh-agent-local
+- 0 com.openssh.ssh-agent
+12345 0 com.openssh.ssh-agent-local
 ```
 
 ## (Optional) Modifying SSH
@@ -1176,16 +1178,20 @@ $ launchctl list | grep ssh-agent
 You can run SSH Agent with modified options (MacOS Big Sur, No Homebrew, No SIP Modification).
 The following will show you how you can modify the startup options of the SSH agent supplied by macOS in a non-invasive way. This can be useful for doing things like setting a key lifetime, which can then be used with `AddKeysToAgent` in your `~/.ssh/config` to automate the timing out of saved keys. This ensures that your passphrase is re-asked for periodically without having to shutdown, re-log, or having it actually persisted in keychain, the latter being almost as bad as having no passphrase at all, given that simply being logged in is generally enough to then use the key.
 
-This method does *not* modify the system-installed SSH agent service (`com.openssh.ssh-agent`), but rather duplicates its functionality into a user-installed launch agent where we can then modify the options. Modifying the system-installed service is becoming increasingly harder to do; [SIP](https://support.apple.com/en-us/HT204899) generally protects the files you need to modify, in addition to certain system volumes being mounted read-only now. This is generally a good thing for application and system security and should not be messed with if you don't have to. Additionally, the [Homebrew](https://brew.sh/) `openssh` package has issues in that you possibly lose out in the modifications that Apple has made to allow the SSH agent to work seamlessly with socket activation - YMMV, but I have had issues getting it to work as it seems to expect to have access to create the socket, causing conflicts when attempting to start the agent.
+This method does **not** modify the system-installed SSH agent service (`com.openssh.ssh-agent`), but rather duplicates its functionality into a user-installed launch agent where we can then modify the options.
+Modifying the system-installed service is becoming increasingly harder to do; [SIP](https://support.apple.com/en-us/HT204899) generally protects the files you need to modify, in addition to certain system volumes being mounted read-only now.
+This is generally a good thing for application and system security and should not be messed with if you don't have to.
+Additionally, the [Homebrew](https://brew.sh/) `openssh` package has issues in that you possibly lose out in the modifications that Apple has made to allow the SSH agent to work seamlessly with socket activation - YMMV, but I have had issues getting it to work as it seems to expect to have access to create the socket, causing conflicts when attempting to start the agent.
 
 ### Copying the plist
 
-```
+```shell
 mkdir ~/Library/LaunchAgents
 cp /System/Library/LaunchAgents/com.openssh.ssh-agent.plist ~/Library/LaunchAgents/com.openssh.ssh-agent-local.plist
 ```
 
 After you do this, open the file with your favorite text editor of choice and replace:
+
 * `com.openssh.ssh-agent` with `com.openssh.ssh-agent-local`
 * `SSH_AUTH_SOCK` with `SSH_AUTH_SOCK_LOCAL`
 
@@ -1193,30 +1199,30 @@ Then, add some options you want for the local agent (as additional `string` tags
 
 Here's a copy of the modified plist file:
 
-```
+```html
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Label</key>
-	<string>com.openssh.ssh-agent-local</string>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/bin/ssh-agent</string>
-		<string>-l</string>
-		<string>-t</string>
-		<string>14400</string>
-	</array>
-	<key>Sockets</key>
-	<dict>
-		<key>Listeners</key>
-		<dict>
-			<key>SecureSocketWithKey</key>
-			<string>SSH_AUTH_SOCK_LOCAL</string>
-		</dict>
-	</dict>
-	<key>EnableTransactions</key>
-	<true/>
+  <key>Label</key>
+  <string>com.openssh.ssh-agent-local</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/ssh-agent</string>
+    <string>-l</string>
+    <string>-t</string>
+    <string>14400</string>
+  </array>
+  <key>Sockets</key>
+  <dict>
+    <key>Listeners</key>
+    <dict>
+      <key>SecureSocketWithKey</key>
+      <string>SSH_AUTH_SOCK_LOCAL</string>
+    </dict>
+  </dict>
+  <key>EnableTransactions</key>
+  <true/>
 </dict>
 </plist>
 ```
@@ -1225,7 +1231,7 @@ Here's a copy of the modified plist file:
 
 Next, add this to your shell profie (ie: `.zprofile` or `.bash_profile`):
 
-```
+```bash
 if [ -n "${SSH_AUTH_SOCK_LOCAL}" ]; then
   export SSH_AUTH_SOCK="${SSH_AUTH_SOCK_LOCAL}"
 fi

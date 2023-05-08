@@ -2,7 +2,7 @@
 title: Smart energy meter - first encounter
 description: When moving to a new house, I immediately had a Smart Meter installed (still not sure what is so smart about it...) with the intention to hook-up a device to read the power and gas consumption throughout the day.
 image: energie-mon.jpg
-publishedAt: 2017-03-29
+publishedAt: 2018-03-29
 authors:
   - name: Ron Moerman
     avatarUrl: https://pbs.twimg.com/profile_images/1583370320261554178/nvAlAh58_400x400.jpg
@@ -13,17 +13,20 @@ tags:
   - IoT
 link: https://codesandbox.io/embed/nuxt-content-l164h?hidenavigation=1&theme=dark
 ---
-When moving to a new house, I immediately had a Smart Meter installed (still not sure what's so smart about it...) with the intention to hook-up a device to read the power and gas consumption throughout the day. Well, doing jobs around the house got in the way and a year later I finally started to look into the details of this Smart Meter. After doing some 'research' on Internet, I decided to start at the beginning: the standards for Dutch Smart Meters, since every meter has to comply with those standards.
+When moving to a new house, I immediately had a Smart Meter installed (still not sure what's so smart about it...) with the intention to hook-up a device to read the power and gas consumption throughout the day. Well, doing jobs around the house got in the way and a few years later I finally started to look into the details of this Smart Meter. After doing some 'research' on Internet, I decided to start at the beginning: the standards for Dutch Smart Meters, since every meter has to comply with those standards.
 
 ## Smart Meter overview
 
-The offical website of the [Netbeheer Nederland](http://www.netbeheernederland.nl) organization, a joint initiative of all Dutch powergrid operators, conatins the standards documentation. All relevant documents are located at the [Slimme Meter](http://www.netbeheernederland.nl/themas/hotspot/hotspot-documenten/?dossierid=11010056&title=Slimme%20meter&onderdeel=Documenten) page. Note that there are multiple versions of the so called **DSMR** standard and different models of Smart Meter are installed throughout The Netherlands. So I checked wich Smart Meter was installed in my house (I live in the area where Stedin manages the powergrid): A Landis+Gyr E350 (type ZMF110), for our 3-phase 230V AC electricity connection.
+The offical website of the [Netbeheer Nederland](http://www.netbeheernederland.nl) organization, a joint initiative of all Dutch powergrid operators, conatins the standards documentation. All relevant documents are located at the [Slimme Meter](http://www.netbeheernederland.nl/themas/hotspot/hotspot-documenten/?dossierid=11010056&title=Slimme%20meter&onderdeel=Documenten) page. Note that there are multiple versions of the so called **DSMR** standard and different models of Smart Meters are installed throughout The Netherlands. So I checked wich Smart Meter was installed in my house (I live in the area where Stedin manages the powergrid): A _Landis+Gyr E350_ (type ZMF110), for our 3-phase 230V AC electricity connection.
 
 ![My Smart Meter](smartmeter/landys.jpg?lightbox=800&cropResize=400,400) {.float_left}
 
-BTW, the 1-phase equivalent is the ZCF110 type. As can be seen on the picture above, the meter clearly specifies DSMR version 4.0, but checking the display info shows the 4.2 version is active (more on the display information later), probably through an update in the last year. BTW. DSMR stands for Dutch Smart Meter Requirements. Newer DSM's may use the newer DMSR v5.x standard, but I have not checked if there is any relevant difference. We also have a 'Smart' Gas Meter which is wirelessly connected to the Landis.
+Note that the 1-phase equivalent is the ZCF110 type.
+As can be seen on the picture above, the meter clearly specifies DSMR version 4.0, but checking the display info shows the 4.2 version is active (more on the display information later), probably through an update in the last year or so.
+DSMR stands for Dutch Smart Meter Requirements. Newer DSM's may use the newer DMSR v5.x standard, but I have not checked if there is any relevant difference, beyond supporting higher update rates.
+We also have a 'Smart' Gas Meter which is wirelessly connected to the Landis+Gyr.
 
-The diagram below (from the DSMR 5.0 standards document, which is much more readable than the older versions) shows the different types of devices and interfaces that make up the energy monitoring ecosystem.
+The diagram below (from the DSMR 5.0 standards document, which is much more readable than the older 4.x versions) shows the different types of devices and interfaces that make up the energy monitoring ecosystem.
 
 ![Energy Monitoring](smartmeter/energy-mon.jpg?cropResize=500,500)
 
@@ -136,7 +139,11 @@ Every data line has the same basic format.
 
     OBIS ( data ) { ( data ) ... } CR LF
 
-It starts with an OBIS reference id, followed by the actual data and terminated with a CR LF. The DSMR document specifies many possible OBIS reference id's that can be included in the message. For now we are interested in the power usage, gas usage and current actual energy usage. I have no solar panels, but will include those fields in my description below as they are identical to the power consumption fields with just a different OBIS reference id. All relevant - to me that is - OBIS codes and the format of their data is presented in the table below. Many OBIS ID's have a device number included (represented by 'n' in the table) that can vary if more than one slave is connected to the smart meter, but in many scenario's it is just a gas meter and that will virtually always get device id '1'.
+It starts with an OBIS reference id, followed by the actual data and terminated with a CR LF.
+The DSMR document specifies many possible OBIS reference id's that can be included in the message.
+For now we are interested in the power usage, gas usage and current actual energy usage.
+All relevant OBIS codes and the format of their data is presented in the table below.
+Many OBIS ID's have a device number included (represented by 'n' in the table) that can vary if more than one slave is connected to the smart meter, but in many scenario's it is just a gas meter and that will virtually always get device id '1'.
 
 | OBIS ID | DESCRIPTION | VALUE FORMAT | EXAMPLE |
 |---------|-------------|--------------|---------|
@@ -162,17 +169,24 @@ The OBIS reference id has 5 fields:
 
     M - n : X . Y . Z
 
-The first field (M), being a '1' or a '0', seems to indicate whether this data records is about the electricity meter values (1) or something else (0). I didn't spend enough time digging through the (hardly readable) OBIS documentation to find a definitive reference to this. Since this field is not needed to uniquely identify a data record, we'll just ignore it for now.
+The first field (M), being a '1' or a '0', seems to indicate whether this data record is about the electricity meter values (1) or something else (0). I didn't spend enough time digging through the (hardly readable) OBIS documentation to find a definitive reference to this. Since this field is not needed to uniquely identify a data record, we'll just ignore it for now.
 
-The second field (n) is a device identifier of the (slave) device on the M-Bus, or '0' when it's the smart meter itself or other (external) data. There can be up to 4 devices connected on an M-Bus, either wired or wireless. Almost all Dutch households have both a smart electrical power and gas meter that are connected through the M-Bus. The smart meter for electricity being the 'master' device (id '0') and the gas meter a slave, usualy with M-Bus id '1'. But let's find out what device type the gas meter should have, so we can formally identify the proper device channel. Details can be found in the [M-Bus protocol description](http://www.m-bus.com/files/w4b21021.pdf) document on page 6-7. There we can see that the gas meter has device type 3, which was to be expected since the message I retrieved from the smart meter mentions a device type of '(0003)'. Any slave electricity meter would have device type 2, by the way. The message line with OBIS *0-1:24.1.0(003)* shows the gas meter device type.
+The second field (n) is a device identifier of the (slave) device on the M-Bus, or '0' when it's the smart meter itself or other (external) data.
+There can be up to 4 devices connected on an M-Bus, either wired or wireless. Mos Dutch households have both a smart electrical power and gas meter that are connected through the M-Bus.
+The smart meter for electricity being the 'master' device (id '0') and the gas meter a slave, usualy with M-Bus id '1'. But let's find out what device type the gas meter should have, so we can formally identify the proper device channel.
+Details can be found in the [M-Bus protocol description](http://www.m-bus.com/files/w4b21021.pdf) document on page 6-7.
+There we can see that the gas meter has device type 3, which was to be expected since the message I retrieved from the smart meter mentions a device type of '(0003)'.
+Any slave electricity meter would have device type 2, by the way.
+The message line with OBIS **0-1:24.1.0(003)** shows the gas meter device type.
 
-The third field is an OBIS category identifying the class of data presented. I have not figured out the details as these values are predefined, but use them as a given number (one or 2 digits).
-
-The same goes fot the remaining two fields.
+The third field is an OBIS category identifying the class of data presented.
+I have not figured out the details as these values are predefined, but use them as a given number (one or 2 digits).
+The same goes for the remaining two fields.
 
 #### P1 message values
 
-Way back at the university, I learned compiler building and one of the steps was to create a BNF syntax diagram to be able to parse the source code properly with all it's syntax variations. I figured that could be a good way to get a grip on the parsing algorithm needed to interpet the message lines.
+Way back at the university, I learned compiler building and one of the steps was to create a BNF syntax diagram to be able to parse the source code properly with all it's syntax variations.
+I figured that could be a good way to get a grip on the parsing algorithm needed to interpet the message lines.
 
     digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
     character = digit | letter
@@ -181,13 +195,20 @@ Way back at the university, I learned compiler building and one of the steps was
     Fn(n,m) = 1*n digit . *m digit
     Sn = 1*character
 
-Note that the official DSMR standard mentions floating point numbers with a variable number of fractional digits. However, all actually used numbers in a P1 message have a fixed number of fractional digits behind the decimal point (if any), up to 3 digits. This makes using real (binary) floating point numbers in the software unnecessary. We can just save these values as integers in thousands of the original unit, effectively removing the decimal point. As an example, the power consumption value of 004951.175 kWh, is stored 4951175 Wh in an integer variable.
+Note that the official DSMR standard mentions floating point numbers with a variable number of fractional digits.
+However, all actually used numbers in a P1 message have a fixed number of fractional digits behind the decimal point (if any), up to 3 digits. This makes using real (binary) floating point numbers in the software unnecessary.
+We can just save these values as integers in thousands of the original unit, effectively removing the decimal point.
+As an example, the power consumption value of 004951.175 kWh, is stored 4951175 Wh in an integer variable.
 
 ## Reading the P1 message
 
-Before diving into the details of designing and building a full blown device te read and store the smart meter data, let's try to read something from the P1 interface. Depending on the type of smart meter, there are some differences in the way the message is sent. For instance, older meters send at 9600 baud, while the 4.x and 5.x standard defines a rate of 115200 baud with 8 data bits, no parity and 1 stop bit. Furthermore the interface is a so called TTL level serial interface, meaning the signals run between 0V and 5V for logic high/low states. Actually, the interface sends reversed signals for low and high levels so we must inverse that before feeding it to a serial interface on a microcontroller.
+Before diving into the details of designing and building a full blown device te read and store the smart meter data, let's try to read something from the P1 interface.
+Depending on the type of smart meter, there are some differences in the way the message is sent.
+For instance, older meters send at 9600 baud, while the 4.x and 5.x standard defines a rate of 115200 baud with 8 data bits, no parity and 1 stop bit.
+Furthermore the interface is a so called TTL level serial interface, meaning the signals run between 0V and 5V for logic high/low states. Actually, the interface sends reversed signals for low and high levels so we must inverse that before feeding it to a serial interface on a microcontroller.
 
-An easy way to get some initial readings from the smart meter is to setup a Raspberry Pi (Model 3 is the simplest as it has built-in WiFi and BlueTooth), install Raspbian on it and enable WiFi connectivity (or connect through Ethernet) and SSH. Some details for the setup:
+An easy way to get some initial readings from the smart meter is to setup a Raspberry Pi (Model 3 is the simplest as it has built-in WiFi and BlueTooth), install Raspbian on it and enable WiFi connectivity (or connect through Ethernet) and SSH.
+Some details for the setup:
 
     1. Enable the serial interface (via raspi-config).
     2. Disable the console on serial0 (change /boot/command.txt and remove references to serial0).
@@ -201,8 +222,13 @@ To connect the P1 port of a Landis+Gyr E350 smart meter to a Raspberry Pi 3 you 
 
 ![P1 to Pi](smartmeter/p1topi.jpg?cropresize=400,400) {.float_right}
 
-Two noteworthy things: First, the Landis has a so called 'open collector output' - a kind of floating output - and needs a pull-up resistor of 1k to switch between low (<1V) and high (>4V). Furthermore, the serial TTL signal is inverted so it must be inverted again before feeding it to the Raspberry Pi serial interface. I used a 7404 hex-inverter since I have plenty laying around,but a simple FET (transistor) and resistor could do as well. Plug it in,add power to the Pi 3 and on your computer connect to the Pi via SSH. Start minicom and see the data flowing.
+Two noteworthy things: First, the Landis has a so called 'open collector output' - a kind of floating output - and needs a pull-up resistor of 1k to switch between low (<1V) and high (>4V).
+Furthermore, the serial TTL signal is inverted so it must be inverted again before feeding it to the Raspberry Pi serial interface.
+I used a 7404 hex-inverter since I have plenty laying around,but a simple FET (transistor) and resistor could do as well.
+Plug it in,add power to the Pi 3 and on your computer connect to the Pi via SSH.
+Start minicom and see the data flowing.
 
 ## Next
 
-Now that we have a decent understanding of the data coming out of the P1 port of the Smart Meter and how to connect it, we can start working on the actual hardware and software design. But that's a topic for another next blog.
+Now that we have a decent understanding of the data coming out of the P1 port of the Smart Meter and how to connect it, we can start working on the actual hardware and software design.
+But that's a topic for another next blog.

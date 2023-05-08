@@ -9,8 +9,9 @@ authors:
     link: https://twitter.com/jmanuelsilvapt
 tags:
   - EPROM
-  - 2708
   - 2716
+  - 2732
+  - Emulator
 link: https://codesandbox.io/embed/nuxt-content-l164h?hidenavigation=1&theme=dark
 ---
 As part of my efforts to build or expand microcomputers from the seventies and early eighties, I needed an EPROM programmer that could handle those old 27xx type EPROMs.
@@ -22,7 +23,7 @@ The in-circuit emulator might be an option for future support of an 2708, but fo
 
 ## EPROM Emulator 1-O-1
 
-An EPROM emulator in essence is an piece of RAM of at least the required capacity for the EPROM to be emulated with two separate and mutually exclusive data and address busses; one to connect the emulator to the circuit under test and mimic an EPROM, the other to allow a development system to write the bytes to the RAM of the emulator.
+In essence, an EPROM emulator is just an piece of RAM of at least the required capacity for the EPROM to be emulated with two separate and mutually exclusive data and address busses; one to connect the emulator to the circuit under test and mimic an EPROM, the other to allow a development system to write the bytes to the RAM of the emulator.
 As you can imagine, those actions should not happen at the same time; if one bus is accessed, the other should be blocked.
 Therefor, I still very much like the cartoon in the September 1977 edition of Elektuur (Elektor) that visualizes it by way of a lock.
 
